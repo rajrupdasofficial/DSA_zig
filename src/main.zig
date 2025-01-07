@@ -1,32 +1,32 @@
 const std = @import("std");
-// const dsa1 = @import("dsa1.zig");
-const dsa2 = @import("dsa2.zig");
-pub fn main() !void {
-    //dsa1 3d box solution
-    // var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    // defer _ = gpa.deinit();
-    // const allocator = gpa.allocator();
+const dsa4 = @import("dsa4.zig");
 
-    // const boxes = [_]dsa1.Box{
-    //     .{ .length = 4, .width = 3, .height = 2 },
-    //     .{ .length = 5, .width = 4, .height = 3 },
-    // };
+pub fn main() void {
+    var allocator = std.heap.page_allocator; // Use a mutable reference
 
-    // const maxHeight = try dsa1.boxStacking(allocator, &boxes);
-    // std.debug.print("Max Stack Height: {}\n", .{maxHeight});
+    // Initialize the hash table with a capacity of 10
+    var table = dsa4.HashTable.init(&allocator, 10); // Pass a pointer to the allocator
 
-    //dsa2.zig
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer _ = gpa.deinit();
+    // Insert some key-value pairs
+    table.insert(&allocator, "apple", 1);
+    table.insert(&allocator, "banana", 2);
 
-    var queue = dsa2.Queue(i32).init(allocator);
-    defer queue.deinit();
+    // Retrieve values
+    const appleValue = table.find("apple");
+    const bananaValue = table.find("banana");
 
-    try queue.enqueue(10);
-    try queue.enqueue(20);
-    try queue.enqueue(30);
+    if (appleValue) |val| {
+        std.debug.print("Value for 'apple': {}\n", .{val});
+    } else {
+        std.debug.print("'apple' not found\n", .{});
+    }
 
-    std.debug.print("Front: {?}\n", .{queue.front()});
-    std.debug.print("Dequeued: {?}\n", .{queue.dequeue()});
+    if (bananaValue) |val| {
+        std.debug.print("Value for 'banana': {}\n", .{val});
+    } else {
+        std.debug.print("'banana' not found\n", .{});
+    }
+
+    // Clean up resources
+    table.deinit(&allocator); // Pass a pointer to the allocator
 }
